@@ -1,0 +1,8 @@
+Flask-SocketIO
+python-engineio
+python-socketio
+simple-websocket
+flask_sqlalchemy
+flask_wtf
+werkzeug
+flask_mqtt
