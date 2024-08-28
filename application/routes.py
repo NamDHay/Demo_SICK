@@ -15,10 +15,10 @@ async_mode = None
 thread = None
 thread_lock = Lock()
 
-app.config['MQTT_BROKER_URL'] = "test.mosquitto.org"#'broker.emqx.io'
-app.config['MQTT_BROKER_PORT'] = 1883
-app.config['MQTT_USERNAME'] = ""  # Set this item when you need to verify username and password
-app.config['MQTT_PASSWORD'] = ""  # Set this item when you need to verify username and password
+app.config['MQTT_BROKER_URL'] = "vm01.i-soft.com.vn"#'broker.emqx.io'
+app.config['MQTT_BROKER_PORT'] = 11883
+app.config['MQTT_USERNAME'] = "mqtt-user-01"  # Set this item when you need to verify username and password
+app.config['MQTT_PASSWORD'] = "MtTP5WBlYy3CSaRL9c_s4VFQ"  # Set this item when you need to verify username and password
 app.config['MQTT_KEEPALIVE'] = 10  # Set KeepAlive time in seconds
 app.config['MQTT_TLS_ENABLED'] = False  # If your server supports TLS, set it True
 
@@ -282,7 +282,7 @@ def add_device():
             #     print(e)
         # epoch_time = epoch_time + 1
         return redirect(url_for('index'))
-    return render_template('addDevice.html', title="Add expenses", form=form)    
+    return render_template('addDevice.html', form=form)    
 
 
 @app.route('/delete-post/<int:entry_id>')
@@ -530,11 +530,11 @@ def sen():
         return render_template('device.html', async_mode=socketio.async_mode)
         # return redirect(url_for('sen'))
     try:
-        # mqtt_client._connect()
+        mqtt_client._connect()
         return render_template('device.html', async_mode=socketio.async_mode)
     except:
         print("Error")
-        return render_template('add.html',title="Add expenses")
+        return render_template('addDevice.html')
 
 
 
@@ -549,12 +549,12 @@ def device_setting():
         form.mqtt_user.data = x.mqtt_user
         form.mqtt_pass.data = x.mqtt_pass
     except:
-        c1 = MQTT_Parameter(mqtt_host = "test.mosquitto.org",mqtt_port = 1883,mqtt_user = "_",mqtt_pass = "_", mqtt_keepalive = 5)
+        c1 = MQTT_Parameter(mqtt_host = "vm01.i-soft.com.vn",mqtt_port = 11883,mqtt_user = "mqtt-user-01",mqtt_pass = "MtTP5WBlYy3CSaRL9c_s4VFQ", mqtt_keepalive = 5)
         db.session.add(c1)
         db.session.commit()
         print("add MQTT parameters")
         return redirect(url_for('sen'))
-    return render_template('DeviceSetting.html', title="Device Setting", form=form)
+    return render_template('DeviceSetting.html', form=form)
 # ///////////////////////////////////////////// Socket //////////////////////////////////////
 # 
 def background_thread():
@@ -577,7 +577,7 @@ def background_thread():
         
         if count > 180:
                 count = 0
-                print("mqtt reconnect affter 30 minutes")
+                print("mqtt reconnect after 30 minutes")
                 mqtt_client._connect()
 
 @socketio.event
