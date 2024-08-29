@@ -1,6 +1,6 @@
 from flask import Flask, render_template, flash, request, url_for, redirect
 from flask_wtf import FlaskForm
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, send
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
@@ -40,8 +40,12 @@ def subscribe(client: mqtt_client):
     def on_message(client, userdata, msg):
         decoded_payload = msg.payload.decode()
         value = sensor.get_mpb10_value(decoded_payload)
-        print("value:", value)
-        socketio.emit('mqtt_message', {'data': value})
+        data = {
+            "mpb10": "Gyro",
+            "value": value
+        }
+        wdoc = json.dumps(data)
+        socketio.emit('mqtt_message', wdoc)
 
     for topic in MQTT_TOPICS_SUBSCRIBE:
         client.subscribe(topic)
@@ -49,7 +53,7 @@ def subscribe(client: mqtt_client):
     
 def run_mqtt():
     client = connect_mqtt()
-    client.loop_forever()
+    client.loop_start()
     subscribe(client)
 
 @app.route("/")
@@ -63,12 +67,14 @@ def dashboard():
 class Config(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     topic = db.Column(db.String(200), nullable=False)
+    sensor = db.Column(db.String(200), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     
     def __repr__(self):
         return '<Topic: %r>' % self.topic
     class ConfigForm(FlaskForm):
         topic = StringField("Topic: ", validators=[DataRequired()])
+        sensor = StringField("Sensor: ", validators=[DataRequired()])
         submit = SubmitField("Subscribe")
 
 @app.route('/mqtt/config', methods=['POST', 'GET'])
@@ -77,7 +83,7 @@ def mqtt_config():
     if form.validate_on_submit():
         conf = Config.query.filter_by(topic=form.topic.data).first()
         if conf is None:
-            conf = Config(topic=form.topic.data)
+            conf = Config(topic=form.topic.data, sensor=form.sensor.data)
             db.session.add(conf)
             db.session.commit()
         flash("Add successfully")   

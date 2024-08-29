@@ -8,7 +8,7 @@
     </div>
   {% endfor %}
 
-  <h1>Topic List:</h1>
+  <h1>Sensor List:</h1>
   <br />
   <div class="shadow-lg p-3 mb-5 bg-body rounded">
     <form method="POST">
@@ -16,6 +16,9 @@
 
       {{ form.topic.label(class='form-label') }}
       {{ form.topic(class='form-control') }}
+
+      {{ form.sensor.label(class='form-label') }}
+      {{ form.sensor(class='form-control') }}
 
       <br />
       {{ form.submit(class='btn btn-primary') }}
@@ -27,11 +30,13 @@
     <tr>
       <td>ID</td>
       <td>Topic</td>
+      <td>Sensor</td>
     </tr>
     {% for mqtt_conf in mqtt_conf %}
       <tr>
         <td>{{ mqtt_conf.id }}</td>
         <td>{{ mqtt_conf.topic }}</td>
+        <td>{{ mqtt_conf.sensor }}</td>
       </tr>
     {% endfor %}
   </table>

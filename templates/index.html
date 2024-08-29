@@ -487,8 +487,8 @@
                     <input type="text" class="form-control" id="planSetInput" />
                   </div>
                   <div class="col -3">
-                    <!--   <label for="resultSetInput" class="form-label">Result set</label>
-            <input type="text" class="form-control" id="resultSetInput">   -->
+                    <!--          <label for="resultSetInput" class="form-label">Result set</label>
+            <input type="text" class="form-control" id="resultSetInput">          -->
                     <label class="form-label">Product</label>
                     <div class="col">
                       <select id="ProductDataSaveSelect" onchange="displaySelectedProduct()" style="width: 100%; text-align: center; padding: 0.3rem 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;"></select>
@@ -571,14 +571,12 @@
       </div>
     </div>
     <script>
-      var socket = io.connect('http://' + document.domain + ':' + location.port)
-      
-      $(document).ready(function () {
-        var socket = io.connect()
-      
-        socket.on('mqtt_connect', function (msg) {
-          console.log('msg.data')
-        })
+      document.addEventListener('DOMContentLoaded', function () {
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+        socket.on('mqtt_message', function(value) {
+          console.log('Received data from MQTT:', value);
+        });
       })
     </script>
   </body>
