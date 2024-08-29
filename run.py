@@ -1,5 +1,7 @@
-from app import app, socketio, Thread, run_mqtt
-
+from application import app
+from application import socketio
+from application.route import run_mqtt
+from threading import Thread
 app.app_context().push()
 if __name__ == "__main__":
     mqtt_thread = Thread(target=run_mqtt)
